@@ -1,18 +1,26 @@
 module Main (main) where
 
 import Control.Concurrent.Async
+import Data.Traversable
 
 data Account = Account Int deriving (Show, Eq)
 
 main :: IO ()
 main = do
   let account = newAccount
-  task1 <- async (return $ deposit 10 account)
-  task2 <- async (return $ withdraw 6 account)
-  wait task1
-  wait task2
+
+  let workers = replicate 20 (depositWorker account) ++
+                replicate 20 (withdrawWorker account)
+
+  tasks <- for workers async
+
+  for tasks wait
+
   putStr $ show account
   return ()
+
+depositWorker account = return $ deposit 10 account
+withdrawWorker account = return $ withdraw 6 account
 
 newAccount = Account 0
 
