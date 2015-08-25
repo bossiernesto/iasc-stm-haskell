@@ -5,6 +5,7 @@ import Account
 
 import Control.Concurrent.Async
 import Control.Concurrent.STM
+import Control.Concurrent.STM.Ensure
 import Control.Monad
 import Data.Traversable
 
@@ -29,3 +30,4 @@ depositTransaction account = modifyTVar account (deposit 10)
 
 withdrawTransaction :: TVar Account -> STM ()
 withdrawTransaction account = modifyTVar account (withdrawAtMost 10)
+--withdrawTransaction account = ensureSTM (modifyTVarOrAbort account (withdrawMaybe 10))
