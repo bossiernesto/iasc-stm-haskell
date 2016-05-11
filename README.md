@@ -57,11 +57,11 @@ do  {
 
  * Existe `IORef`: es una variable mutable como las imperativas tradicionales. La única restricción es que las funciones que operan sobre ella devuelven siempre `IO`, con lo que sólo podemos usarlas en funciones _"impuras"_
 
-## Intro a STM
+## 1. Intro a STM
 
 ver en esta [sección](https://github.com/arquitecturas-concurrentes/iasc-stm-haskell/tree/master/1.5_stm_intro)
 
-## 1. Cuentas no transaccionales
+## 2. Cuentas no transaccionales
  
 Aparcen algunas cosas más:
 
@@ -70,7 +70,7 @@ Aparcen algunas cosas más:
     * obtener un resultado
   
  
-## 2. Cuentas transaccionales
+## 3. Cuentas transaccionales
 
 Aparecen algunas cosas más:
 
