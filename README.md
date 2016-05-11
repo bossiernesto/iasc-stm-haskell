@@ -4,7 +4,7 @@
 
 Haskell soporta tanto concurrencia como paralelismo. 
 
- * El paralelismo no afecta al sistema de tipos, justamente porque no afecta la semántica del programa. Existen dos (funciones)[https://github.com/arquitecturas-concurrentes/iasc-stm-haskell/tree/master/0_par_seq]:
+ * El paralelismo no afecta al sistema de tipos, justamente porque no afecta la semántica del programa. Existen dos [funciones](https://github.com/arquitecturas-concurrentes/iasc-stm-haskell/tree/master/0_par_seq):
     * `par`
     * `seq` 
  * La concurrencia sí, y es explícita. La forma más básica de concurrencia se da empleando: 
@@ -59,7 +59,7 @@ do  {
 
 ## Intro a STM
 
-ver en esta [seccion](https://github.com/arquitecturas-concurrentes/iasc-stm-haskell/tree/master/1.5_stm_intro)
+ver en esta [sección](https://github.com/arquitecturas-concurrentes/iasc-stm-haskell/tree/master/1.5_stm_intro)
 
 ## 1. Cuentas no transaccionales
  
