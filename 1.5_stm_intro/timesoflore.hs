@@ -33,9 +33,9 @@ transfer qty fromBal toBal = do
 
 removeInv :: Eq a => a -> [a] -> Maybe [a]
 removeInv x xs =
-    case takeWhile (/= x) xs of
-      (_:ys) -> Just ys
-      []     -> Nothing
+    case span (/= x) xs of
+      (_, [])                -> Nothing
+      (prefix, (_ : suffix)) -> Just $ prefix ++ suffix
 
 maybeGiveItem :: Item -> Inventory -> Inventory -> STM Bool
 maybeGiveItem item fromInv toInv = do

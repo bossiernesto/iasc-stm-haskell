@@ -125,9 +125,9 @@ tengamos en cuenta que este estado no es puro, ya que hay efecto de lado y esto 
 ~~~haskell
 removeInv :: Eq a => a -> [a] -> Maybe [a]
 removeInv x xs =
-    case takeWhile (/= x) xs of
-      (_:ys) -> Just ys
-      []     -> Nothing
+    case span (/= x) xs of
+      (_, [])                -> Nothing
+      (prefix, (_ : suffix)) -> Just $ prefix ++ suffix
 ~~~
 
 veamos la función de dar un item a otro personaje, utilizando esta función pura ya armada, si nos devuelve un Nothing, entonces deberemos retornar Falso y cancelar la transacción, de esta manera tiene sentido nuestra lógica del juego.
