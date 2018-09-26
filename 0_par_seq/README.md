@@ -25,7 +25,7 @@ seq :: a -> b -> b
 PSEQ :: a -> b -> b
 ~~~
 
-par es una funcion que permite que pueda empezarse una computación en paralalo, y se lo conoce como spark (chispa(?)), seq por el otro lado fuerza a que una computación sea ejecutada (evitando la lazy evaluation, cambio de lazy a eager)
+par es una función que permite que pueda empezarse una computación en paralelo, y se lo conoce como spark (chispa(?)), seq por el otro lado fuerza a que una computación sea ejecutada (evitando la lazy evaluation, cambio de lazy a eager)
 
 por ej
 
@@ -33,7 +33,7 @@ por ej
 (x `par` y)
 ~~~
 
-esta chispa evalua x, y regresa 'y'. Estas chispas se ponen en el stack para su ejecución en orden FIFO, pero no inmediantamente. i el tiempo de ejecución detecta que hay una inactividad de la CPU, entonces puede convertir una chispa en un hilo real, y ejecutar el nuevo hilo en la inactividad de la CPU. De esta manera el paralelismo disponible se extiende entre las CPUs reales.
+esta chispa evalúa x, y regresa 'y'. Estas chispas se ponen en el stack para su ejecución en orden FIFO, pero no inmediatamente. i el tiempo de ejecución detecta que hay una inactividad de la CPU, entonces puede convertir una chispa en un hilo real, y ejecutar el nuevo hilo en la inactividad de la CPU. De esta manera el paralelismo disponible se extiende entre las CPUs reales.
 
 Bien, veamos el ejemplo de fibonacci por ej
 

@@ -15,17 +15,17 @@ Algunas nociones previas que es bueno tener en cuenta:
 
 ### Efectos
 
-  * Haskell es un lenguaje puro, lo cual significa que no existe forma de que sus funciones, al ser evaluadas, presenten efectos, tales como mutaciones globales de estado, entrada-salida, o lanazamientos de thread. 
-  * Sin emabrgo, esto no significa que no pueda utilarse para expresar lo anterior: además de sus tipos de datos Int, Float, función, etc, presenta el tipo de dato `IO`, que representa un efecto. Y dado que es un valor como cualquier otro, Haskell puede operarlo como a cualquier valor: ordenarlos, concatenerlos, etc.
+  * Haskell es un lenguaje puro, lo cual significa que no existe forma de que sus funciones, al ser evaluadas, presenten efectos, tales como mutaciones globales de estado, entrada-salida, o lanzamientos de thread. 
+  * Sin embargo, esto no significa que no pueda utilizarse para expresar lo anterior: además de sus tipos de datos Int, Float, función, etc, presenta el tipo de dato `IO`, que representa un efecto. Y dado que es un valor como cualquier otro, Haskell puede operarlo como a cualquier valor: ordenarlos, concatenarlos, etc.
   * Un programa ejecutable es una función que devuelve un valor de tipo IO. El runtime de Haskell ejecuta el efecto representado por este valor, produciendo así los efectos en el mundo real deseados.
   * Moraleja: un programa Haskell no tiene efectos, pero es capaz de devolver un valor que los representa, pudiendo asi hacer todo lo que un programa imperativo podría hacer, y más.
   * El tipo IO está cuidadosamente modelado de forma tal que sólo puede ser combinado con otros efectos. De esa forma, un efecto no puede "accidentalmente" ejecutarse dentro de una función pura.
-  * Moraleja 2: En Haskell es muy fácil saber si una función tendrá efectos cuando se ejecute el efecto del `main`: basta con mirar su tipo. Si su retorno no es `IO algo`, la función jamás tendrá efectos sobre el mundo. Esto permite fácilmente separar código _"puro"_ (ahora en sentido amplio, porque como ya dijimos todo codigo es puro en Haskell) del código _"impuro"_. Esto es muy útil a la hora de trabajar con concurrencia.
+  * Moraleja 2: En Haskell es muy fácil saber si una función tendrá efectos cuando se ejecute el efecto del `main`: basta con mirar su tipo. Si su retorno no es `IO algo`, la función jamás tendrá efectos sobre el mundo. Esto permite fácilmente separar código _"puro"_ (ahora en sentido amplio, porque como ya dijimos todo código es puro en Haskell) del código _"impuro"_. Esto es muy útil a la hora de trabajar con concurrencia.
 
 ### Mónadas, Do, IO
 
- * IO implementa la interfaz de  mónada, al igual que la lista o el Maybe. La operación de combinación `a >>= \b -> f b` construye un IO que, cuando ejecutado, ejecuta los efectos de `a` y luego los efectos de `f b`. De forma análoga `a >> b`, ejecuta `a` y luego `b`
- * Dado que el patron de control de flujo mónada es tan común en Haskell, se puede utilizar una sintaxis especial: do-syntax. Ejemplos:
+ * IO implementa la interfaz de mónada, al igual que la lista o el Maybe. La operación de combinación `a >>= \b -> f b` construye un IO que, cuando es ejecutado, ejecuta los efectos de `a` y luego los efectos de `f b`. De forma análoga `a >> b`, ejecuta `a` y luego `b`
+ * Dado que el patrón de control de flujo mónada es tan común en Haskell, se puede utilizar una sintaxis especial: do-syntax. Ejemplos:
 
 ```haskell
 do { x } == x
@@ -63,7 +63,7 @@ ver en esta [sección](https://github.com/arquitecturas-concurrentes/iasc-stm-ha
 
 ## 2. Cuentas no transaccionales
 
-Aparcen algunas cosas más:
+Aparecen algunas cosas más:
 
   * `async`: estructura de control que se monta arriba del thread, pero que permite
     * esperar

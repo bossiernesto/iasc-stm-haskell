@@ -9,20 +9,20 @@ En el modelo tradicional de programación con threads, cuando compartimos variab
 
 Estos problemas afectan a cualquier escala de software usando este esquema, por lo que es bastante complejo el manejo de threads con estado compartido.
 
-Software transactional memory (STM) nos da unas herramientas básicas aunque potentes con las cuales podemos solucionar casi todos los problemas ya mencionados. STM ejecuta un bloque de acciones como una transacción usando un combinador llamado atomically, en suma este combinator nos permite convertir una transacción STM en un bloque ejecutable. Una vez que entramos al bloque, otros threads no pueden ver ninguna modificaciones que hagamos hasta que salgamos, y nuestro thread no puede ver ninguno de los cambios hechos por otros threads. Estas dos propiedades hacen que nuestra ejecución sea aislada. Esto nos hace pensar a algo muy similar a un mutex, en el que no se permite a otro thread modificar un estado hasta que lo libere.
+Software transactional memory (STM) nos da unas herramientas básicas aunque potentes con las cuales podemos solucionar casi todos los problemas ya mencionados. STM ejecuta un bloque de acciones como una transacción usando un combinador llamado atomically, en suma este combinador nos permite convertir una transacción STM en un bloque ejecutable. Una vez que entramos al bloque, otros threads no pueden ver ninguna modificaciones que hagamos hasta que salgamos, y nuestro thread no puede ver ninguno de los cambios hechos por otros threads. Estas dos propiedades hacen que nuestra ejecución sea aislada. Esto nos hace pensar a algo muy similar a un mutex, en el que no se permite a otro thread modificar un estado hasta que lo libere.
 
 ![STM y mutex](mutex.png)
 
 Cuando se sale de una transacción, solo una de las dos siguientes cosas pueden suceder:
 
-- Si no hay otro thread que haya modificado concurrentemente el mismo estado que nosotros, todas nuestras modificaciones serán visibles automaticamente a otros threads
+- Si no hay otro thread que haya modificado concurrentemente el mismo estado que nosotros, todas nuestras modificaciones serán visibles automáticamente a otros threads
 
 - Toas las modificaciones son descartadas sin ser ejecutadas, y nuestro bloque de acciones es reiniciado automáticamente.
 
-La naturaleza de ejecutar todo o nada del bloque automatically se ejecuta de manera atómica, por eso se llama asi :P .
+La naturaleza de ejecutar todo o nada del bloque atomically se ejecuta de manera atómica, por eso se llama asi :P .
 Esto es una de las propiedades ACID que vemos en las bases de datos, y es por eso que trabajando con STM se ve que es algo medianamente similar aunque más simple.
 
-Veamos el prototipo de automatically
+Veamos el prototipo de atomically
 
 ~~~haskell
 ghci> :type atomically
@@ -38,7 +38,7 @@ atomically $ do
   rightFork <- takeFork right
 ~~~
 
-STM tiene una construcción llamada TVars que contienen un estado compartido, cuando un thread ejecuta una transacción, crea un log para el solo, en STM tenemos dos operaciones que son writeTVar y readTVar, cuando se modifica una TVar por medio de writeTVar, no se pisa este valor pero se lo registra en el log, o sea el log es como un diario que solo usaremos dentro del contexto de la transacción para un thread en particular, y se desecha al salir del bloque de la transacción. Ya vimos que pasa cuando queremos escribir un Tvar, y cuando queremos leerlo dentro de la ransacción?
+STM tiene una construcción llamada TVars que contienen un estado compartido, cuando un thread ejecuta una transacción, crea un log para el solo, en STM tenemos dos operaciones que son writeTVar y readTVar, cuando se modifica una TVar por medio de writeTVar, no se pisa este valor pero se lo registra en el log, o sea el log es como un diario que solo usaremos dentro del contexto de la transacción para un thread en particular, y se desecha al salir del bloque de la transacción. Ya vimos que pasa cuando queremos escribir un Tvar, y cuando queremos leerlo dentro de la transacción?
 
 veamos las firmas de estas funciones:
 
@@ -54,11 +54,11 @@ writeTVar :: TVar a -> a -> STM ()
 Cuando queremos ejecutar readTvar en una transacción pasa lo siguiente:
 
 - El thread buscará en el log por el valor, si es que fue modificado previamente por un writeTVar
-- Si no se encuentra nada, el valor se lee desde el TVar directamnete, y el valor leido es grabado en el log.
+- Si no se encuentra nada, el valor se lee desde el TVar directamente, y el valor leido es grabado en el log.
 
 Cuando el bloque atomically finaliza, el log es validado, porque puede pasar que una variable ya fue escrita por otros threads. El funcionamiento es el siguiente: Chequeamos los valores leidos por medio de readTVar registrados en el log y nos aseguramos que matchee con el valor en el TVar real, si coinciden la validación pasa, y escribimos los nuevos valores de la transacción en los TVars, sino se desecha la transacción y se reinicia, como lo explicamos previamente.
 
-Como estamos en Haskell y tenemos transparencia referencial, nos podemos garantizar que no tenemos efecto de lado y que estaremos devolviendo el mismo resultado que esperamos tener despues de ejecutar de nuevo la transacción.
+Como estamos en Haskell y tenemos transparencia referencial, nos podemos garantizar que no tenemos efecto de lado y que estaremos devolviendo el mismo resultado que esperamos tener después de ejecutar de nuevo la transacción.
 
 Tenemos otra construcción más que son las TMVar, que son como una caja que puede contener un valor o nada, es decir, esto es una caja casi igual a un Maybe, solamente que para STM.
 
@@ -76,7 +76,7 @@ Vemos el ejercicio de Cuentas o el de Times Of Lore
 
 ### Times of lore
 
-Este es el modelaje de un juego de un cabllero que debe salvar a un reino en un tiempo de crisis. No nos importa mucho el modelo, solamente que tenemos un personaje que tiene una HP determinado, un inventario y una cantidad de oro determinado y puede interactuar con otros personajes NPC.
+Este es el modelaje de un juego de un caballero que debe salvar a un reino en un tiempo de crisis. No nos importa mucho el modelo, solamente que tenemos un personaje que tiene una HP determinado, un inventario y una cantidad de oro determinado y puede interactuar con otros personajes NPC.
 
 Dicho esto, solo modelaremos la parte de lo que son las transacciones de items, oro, compra/venta de items y no mucho más, para empezar modelemos al personaje.
 
@@ -103,7 +103,7 @@ data Player = Player {
     }
 ~~~
 
-Modelamos tipos para el balance de oro, salud y los items, ahora todos son TVars, porque pensemos que cuando querramos hacer una compra o una venta de un item o intercambio de oro del banco al personaje, esta sea atómica, porque en el caso de la transferencia puede haber otras transacciones mutuas y el banco puede quedarse sin oro!, o cuando se quiera vender el que compra no puede tener el oro necesario.
+Modelamos tipos para el balance de oro, salud y los items, ahora todos son TVars, porque pensemos que cuando queramos hacer una compra o una venta de un item o intercambio de oro del banco al personaje, esta sea atómica, porque en el caso de la transferencia puede haber otras transacciones mutuas y el banco puede quedarse sin oro!, o cuando se quiera vender el que compra no puede tener el oro necesario.
 
 veamos primero la transferencia de oro
 
@@ -187,7 +187,7 @@ transferSTM qty fromBal toBal = do
   readTVar toBal >>= writeTVar toBal . (qty +)
 ~~~
 
-ahora de esta manera la funcion para vender se hace más simple, veamos
+ahora de esta manera la función para vender se hace más simple, veamos
 
 
 ~~~haskell
@@ -197,7 +197,7 @@ sellItem item price buyer seller = do
   transfer price (balance buyer) (balance seller)
 ~~~
 
-no solo, que en vez de devolver un booleano a chequear estamos devolviendo una transaccion exitosa o no, sino que además, si la transacción no resulta por falta de item o fondos, la misma con retry se posterga a otro momento en el que se pueda hacer esto.
+no solo, que en vez de devolver un booleano a chequear estamos devolviendo una transacción exitosa o no, sino que además, si la transacción no resulta por falta de item o fondos, la misma con retry se posterga a otro momento en el que se pueda hacer esto.
 
 
 
